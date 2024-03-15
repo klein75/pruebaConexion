@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-IndexApplication<index>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "crud.index.IndexApplication",
+            "projectName": "index",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
