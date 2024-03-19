@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import crud.index.modelos.Usuario;
+import crud.index.modelos.Estado;
 import crud.index.repositorio.Repository;
 
 @RestController
-public class Usuarios_Controller {
+public class Estado_Controller {
 
     @Autowired
     private Repository repo;
@@ -22,15 +22,17 @@ public class Usuarios_Controller {
         return "Conectado";
     }
 
-    @GetMapping("/users")
-    public List<Usuario> getusuarios() {
+    @GetMapping("/estado")
+    public List<Estado> geteEstados() {
         return repo.findAll();
     }
 
-    @PostMapping("/creauser")
-    public String creauser(@RequestBody Usuario us) {
-        repo.save(us);
-        return "usuario guardado";
+    
+    @SuppressWarnings("null")
+    @PostMapping("/creaEstado")
+    public String creaEstado(@RequestBody Estado estado) {
+        repo.save(estado);
+        return "Estado guardado";
     }
 
 }
