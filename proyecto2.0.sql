@@ -14,9 +14,15 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema mydb
 -- -----------------------------------------------------
-
 CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
 USE `mydb` ;
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Estado`
+-- -----------------------------------------------------
+-- Creación de la tabla Estado
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+use `mydb` ;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`Estado`
@@ -27,38 +33,35 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Estado` (
   `estado` VARCHAR(45) NOT NULL,
   `tipo` VARCHAR(45) NOT NULL,
   `detalles` VARCHAR(250) NULL,
-  `activo` INT NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
-
 -- Creación de la tabla TipoUsuario
-CREATE TABLE IF NOT EXISTS `mydb`.`TipoUsuario` (
+CREATE TABLE IF NOT EXISTS `mydb`.TipoUsuario (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipoUsuario` VARCHAR(30) NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_TipoUsuario_Estado1`
+  CONSTRAINT `fk_TipoUsuario_Estado`
     FOREIGN KEY (`Estado_id`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
-
 -- Creación de la tabla TipoDocumento
 CREATE TABLE IF NOT EXISTS `mydb`.`TipoDocumento` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipoDocumento` VARCHAR(45) NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_TipoDocumento_Estado1`
+  CONSTRAINT `fk_TipoDocumento_Estado`
     FOREIGN KEY (`Estado_id`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
@@ -73,12 +76,14 @@ CREATE TABLE IF NOT EXISTS `mydb`.`usuario` (
   `primerApellido` VARCHAR(45) NOT NULL,
   `segundoApellido` VARCHAR(45) NOT NULL,
   `documento` VARCHAR(45) NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+   `estado` INT NOT null,
+   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `TipoUsuario_id` INT NOT NULL,
   `TipoDocumento_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_usuario_TipoUsuario1`
+  
+  CONSTRAINT `fk_usuario_TipoUsuario`
     FOREIGN KEY (`TipoUsuario_id`)
     REFERENCES `mydb`.`TipoUsuario` (`id`)
     ON DELETE NO ACTION
@@ -98,11 +103,11 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Horario` (
   `horaInicio` TIME NULL,
   `horaFinal` TIME NULL,
   `detalles` VARCHAR(250) NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_Horario_Estado1`
+  CONSTRAINT `fk_Horario_Estado`
     FOREIGN KEY (`Estado_id`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
@@ -114,11 +119,11 @@ CREATE TABLE IF NOT EXISTS `mydb`.`TipoCurso` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipoCurso` VARCHAR(45) NOT NULL,
   `descripcion` TEXT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_TipoCurso_Estado1`
+  CONSTRAINT `fk_TipoCurso_Estado`
     FOREIGN KEY (`Estado_id`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
@@ -131,8 +136,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Curso` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `programa` VARCHAR(255) NOT NULL,
   `descripcion` TEXT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `TipoCurso_id` INT NOT NULL,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
@@ -158,8 +163,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`CursoAbierto` (
   `finalizacionCurso` DATETIME NOT NULL,
   `pagoInicial` DECIMAL NOT NULL,
   `costoTotal` DECIMAL NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Horario_id` INT NOT NULL,
   `Curso_id` INT NOT NULL,
   `Estado_id` INT NOT NULL,
@@ -188,8 +193,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`PlanPago` (
   `planPago` VARCHAR(45) NOT NULL,
   `detalles` VARCHAR(255) NULL,
   `pago` INT(2) NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_PlanPago_Estado1`
@@ -211,8 +216,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Inscripcion` (
   `usuario_id` INT NOT NULL,
   `CursoAbierto_id` INT NOT NULL,
   `PlanPago_id` INT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Inscripcion_usuario1`
@@ -243,8 +248,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Asignatura` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `asignatura` VARCHAR(45) NOT NULL,
   `area` VARCHAR(45) NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Asignatura_Estado1`
@@ -285,8 +290,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`AsignaturaDocente` (
   `idDocente` INT NOT NULL,
   `idAsignatura` INT NOT NULL,
   `CursoAbierto_id` INT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_AsignaturaDocente_usuario1`
@@ -319,8 +324,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Actividad` (
   `descripcion` TEXT NOT NULL,
   `fechaInicio` DATETIME NOT NULL,
   `fechaVencimiento` DATETIME NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `CursoAbierto_id` INT NOT NULL,
   `AsignaturaCurso_Asignatura_id` INT NOT NULL,
   `AsignaturaCurso_CursoAbierto_id` INT NOT NULL,
@@ -356,8 +361,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Estudiante` (
   `titulo` VARCHAR(45) NULL,
   `actividad` TEXT NOT NULL,
   `comentario` TEXT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Inscripcion_id` INT NOT NULL,
   `Actividad_id` INT NOT NULL,
   `Estado_id` INT NOT NULL,
@@ -409,8 +414,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Periodo` (
   `fechaInicio` DATETIME NOT NULL,
   `fechaVencimiento` DATETIME NOT NULL,
   `fechaFinal` DATETIME NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Periodo_Estado1`
@@ -432,8 +437,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Reporte` (
   `ausencias` DECIMAL NOT NULL,
   `aComentario` VARCHAR(45) NULL,
   `comentario` VARCHAR(250) NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `idDocente` INT NOT NULL,
   `Inscripcion_id` INT NOT NULL,
   `CursoAbierto_id` INT NOT NULL,
@@ -479,8 +484,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Evento` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `evento` VARCHAR(45) NOT NULL,
   `descripcion` TEXT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Periodo_id` INT NOT NULL,
   `Horario_id` INT NOT NULL,
   `Estado_id` INT NOT NULL,
@@ -506,8 +511,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Evento` (
 -- Creación de la tabla EventoCurso
 CREATE TABLE IF NOT EXISTS `mydb`.`EventoCurso` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `CursoAbierto_id` INT NOT NULL,
   `Evento_id` INT NOT NULL,
   `Estado_id` INT NOT NULL,
@@ -537,8 +542,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Noticias` (
   `etiqueta` VARCHAR(30) NOT NULL,
   `noticia` TEXT NOT NULL,
   `imagen` TEXT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `usuario_id` INT NOT NULL,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
@@ -560,8 +565,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`TipoRegistro` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipoRegistro` VARCHAR(45) NOT NULL,
   `descripcionRegistro` TEXT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_TipoRegistro_Estado1`
@@ -606,8 +611,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Objetivo` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `titulo` VARCHAR(140) NOT NULL,
   `descripcion` TINYTEXT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Asignatura_id` INT NOT NULL,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
@@ -628,8 +633,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Objetivo` (
 CREATE TABLE IF NOT EXISTS `mydb`.`Pregunta` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `pregunta` VARCHAR(45) NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Pregunta_Estado1`
@@ -646,8 +651,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Cuenta` (
   `cuenta` VARCHAR(45) NOT NULL,
   `apodo` VARCHAR(45) NOT NULL,
   `imagen` TEXT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Pregunta_id` INT NOT NULL,
   PRIMARY KEY (`usuario_id`),
   CONSTRAINT `fk_Cuenta_usuario`
@@ -667,8 +672,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Cuenta` (
 CREATE TABLE IF NOT EXISTS `mydb`.`Responsable` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `idSupervisor` INT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Responsable_usuario1`
@@ -687,11 +692,11 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Responsable` (
 -- Creación de la tabla Contraseña
 CREATE TABLE IF NOT EXISTS `mydb`.`Contraseña` (
   `idUsuario` INT NOT NULL,
-  `sal` BINARY(90) NOT NULL,
-  `picadillo` BINARY(90) NOT NULL,
+  `salt` BINARY(90) NOT NULL,
+  `hash` BINARY(90) NOT NULL,
   `respuesta` BINARY(90) NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idUsuario`),
   CONSTRAINT `fk_Contraseña_usuario1`
     FOREIGN KEY (`idUsuario`)
@@ -707,8 +712,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Notificacion` (
   `estado` INT(1) NOT NULL,
   `detalle` TEXT NOT NULL,
   `idNotificador` INT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Notificacion_usuario1`
@@ -730,8 +735,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Correo` (
   `Correo` VARCHAR(45) NOT NULL,
   `alteral` VARCHAR(45) NULL,
   `cPuntaje` INT(2) NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idUsuario`),
   CONSTRAINT `fk_Correo_usuario1`
     FOREIGN KEY (`idUsuario`)
@@ -749,8 +754,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Telefono` (
   `whatsApp` INT(1) NOT NULL,
   `telegram` INT(1) NOT NULL,
   `otro` VARCHAR(45) NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `fk_Telefono_usuario1`
     FOREIGN KEY (`idUsuario`)
     REFERENCES `mydb`.`usuario` (`id`)
@@ -766,8 +771,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Descuento` (
   `tipoDescuento` INT(1) NOT NULL,
   `monto` DECIMAL(9,2) NOT NULL,
   `descripcion` VARCHAR(250) NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Descuento_Estado1`
@@ -785,8 +790,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Descuento` (
 CREATE TABLE IF NOT EXISTS `mydb`.`DescuentoInscripcion` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `detalles` VARCHAR(255) NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Inscripcion_id` INT NOT NULL,
   `Descuento_id` INT NOT NULL,
   `Estado_id` INT NOT NULL,
@@ -814,8 +819,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`TipoPago` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipoPago` VARCHAR(45) NOT NULL,
   `descripcion` TEXT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `Estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_TipoPago_Estado1`
@@ -832,8 +837,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Pago` (
   `monto` DECIMAL(9,2) NOT NULL,
   `comprobante` TEXT NOT NULL,
   `descripcion` TINYTEXT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+ `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `TipoPago_id` INT NOT NULL,
   `Inscripcion_id` INT NOT NULL,
   PRIMARY KEY (`id`),
@@ -854,8 +859,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Pago` (
 CREATE TABLE IF NOT EXISTS `mydb`.`HistorialEstudiante` (
   `Inscripcion_id` INT NOT NULL,
   `registro` TEXT NOT NULL,
-  `creado` TIMESTAMP NULL,
-  `modificado` TIMESTAMP NULL,
+  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Inscripcion_id`),
   CONSTRAINT `fk_HistorialEstudiante_Inscripcion1`
     FOREIGN KEY (`Inscripcion_id`)
@@ -870,3 +875,18 @@ CREATE TABLE IF NOT EXISTS `mydb`.`HistorialEstudiante` (
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+
+
+-- -------------------------------------
+-- tipos de usuario activos 
+-- ---------------------------------------
+-- SELECT tu.id, 
+   --    CASE e.estado
+     --      WHEN 'activo' THEN 'Activo'
+       --    ELSE 'Inactivo'
+    --   END AS estado,
+      -- tu.tipoUsuario
+-- FROM TipoUsuario tu
+-- INNER JOIN Estado e ON tu.Estado_id = e.id; 
