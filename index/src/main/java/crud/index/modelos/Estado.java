@@ -37,11 +37,6 @@ public class Estado {
     @Setter
     private String detalles;
 
-    @Column
-    @Getter
-    @Setter
-    private Integer activo;
-
    @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
     @Getter

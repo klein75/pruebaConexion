@@ -53,7 +53,6 @@ public class EstadoController {
             estado.setEstado(estadoDetails.getEstado());
             estado.setTipo(estadoDetails.getTipo());
             estado.setDetalles(estadoDetails.getDetalles());
-            estado.setActivo(estadoDetails.getActivo());
             repo.save(estado);
             return new ResponseEntity<>("Estado actualizado correctamente", HttpStatus.OK);
         } else {

@@ -109,7 +109,6 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Horario` (
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
-select*from Usuario;
 -- Creación de la tabla TipoCurso
 CREATE TABLE IF NOT EXISTS `mydb`.`TipoCurso` (
   `id` INT NOT NULL AUTO_INCREMENT,
