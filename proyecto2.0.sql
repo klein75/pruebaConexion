@@ -9,13 +9,12 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 
 -- -----------------------------------------------------
 -- Schema mydb
--- -----------------------------------------------------
-
+-- -----------------------------------------------------	
 -- -----------------------------------------------------
 -- Schema mydb
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+use `mydb` ;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`Estado`
@@ -32,6 +31,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Estado` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `estado` VARCHAR(45) NOT NULL,
   `tipo` VARCHAR(45) NOT NULL,
+  `activo` int (1) not null,
   `detalles` VARCHAR(250) NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -39,30 +39,30 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Estado` (
 ) ENGINE = InnoDB;
 
 -- Creación de la tabla TipoUsuario
-CREATE TABLE IF NOT EXISTS `mydb`.TipoUsuario (
+CREATE TABLE IF NOT EXISTS `mydb`.tipo_usuario (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `tipoUsuario` VARCHAR(30) NOT NULL,
+  `tipousuario` VARCHAR(30) NOT NULL,
    `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_TipoUsuario_Estado`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado_id`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
 -- Creación de la tabla TipoDocumento
-CREATE TABLE IF NOT EXISTS `mydb`.`TipoDocumento` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Tipo_documento` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `tipoDocumento` VARCHAR(45) NOT NULL,
+  `tipo_documento` VARCHAR(45) NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_TipoDocumento_Estado`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -70,29 +70,35 @@ CREATE TABLE IF NOT EXISTS `mydb`.`TipoDocumento` (
 
 
 -- Creación de la tabla usuario
-CREATE TABLE IF NOT EXISTS `mydb`.`usuario` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Usuario` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(45) NOT NULL,
-  `primerApellido` VARCHAR(45) NOT NULL,
-  `segundoApellido` VARCHAR(45) NOT NULL,
+  `primer_apellido` VARCHAR(45) NOT NULL,
+  `segundo_apellido` VARCHAR(45) NOT NULL,
   `documento` VARCHAR(45) NOT NULL,
    `estado` INT NOT null,
    `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `TipoUsuario_id` INT NOT NULL,
-  `TipoDocumento_id` INT NOT NULL,
+  `tipo_usuario` INT NOT NULL,
+  `tipo_documento` INT NOT NULL,
   PRIMARY KEY (`id`),
   
   CONSTRAINT `fk_usuario_TipoUsuario`
-    FOREIGN KEY (`TipoUsuario_id`)
-    REFERENCES `mydb`.`TipoUsuario` (`id`)
+    FOREIGN KEY (`Tipo_usuario`)
+    REFERENCES `mydb`.`tipo_usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_usuario_TipoDocumento1`
-    FOREIGN KEY (`TipoDocumento_id`)
-    REFERENCES `mydb`.`TipoDocumento` (`id`)
+    FOREIGN KEY (`Tipo_documento`)
+    REFERENCES `mydb`.`tipo_documento` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+    CONSTRAINT `fk_Usuario_Estado`
+    FOREIGN KEY (`estado`)
+    REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
+    
 ) ENGINE = InnoDB;
 
 
@@ -100,31 +106,32 @@ CREATE TABLE IF NOT EXISTS `mydb`.`usuario` (
 CREATE TABLE IF NOT EXISTS `mydb`.`Horario` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `horario` VARCHAR(45) NOT NULL,
-  `horaInicio` TIME NULL,
-  `horaFinal` TIME NULL,
+  `hora_inicio` TIME NULL,
+  `hora_final` TIME NULL,
   `detalles` VARCHAR(250) NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Horario_Estado`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
+select*from Usuario;
 -- Creación de la tabla TipoCurso
-CREATE TABLE IF NOT EXISTS `mydb`.`TipoCurso` (
+CREATE TABLE IF NOT EXISTS `mydb`.`tipo_curso` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `tipoCurso` VARCHAR(45) NOT NULL,
+  `tipo_curso` VARCHAR(45) NOT NULL,
   `descripcion` TEXT NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_TipoCurso_Estado`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -138,16 +145,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Curso` (
   `descripcion` TEXT NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `TipoCurso_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `tipo_curso` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Curso_TipoCurso1`
-    FOREIGN KEY (`TipoCurso_id`)
-    REFERENCES `mydb`.`TipoCurso` (`id`)
+    FOREIGN KEY (`tipo_curso`)
+    REFERENCES `mydb`.`tipo_curso` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Curso_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -155,32 +162,32 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Curso` (
 
 
 -- Creación de la tabla CursoAbierto
-CREATE TABLE IF NOT EXISTS `mydb`.`CursoAbierto` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Curso_abierto` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `inicioInscripcion` DATETIME NOT NULL,
-  `inicioCurso` DATETIME NOT NULL,
-  `finalizacionInscripcion` DATETIME NOT NULL,
-  `finalizacionCurso` DATETIME NOT NULL,
-  `pagoInicial` DECIMAL NOT NULL,
-  `costoTotal` DECIMAL NOT NULL,
+  `inicio_inscripcion` DATETIME NOT NULL,
+  `inicio_curso` DATETIME NOT NULL,
+  `finalizacion_inscripcion` DATETIME NOT NULL,
+  `finalizacion_curso` DATETIME NOT NULL,
+  `pago_inicial` DECIMAL NOT NULL,
+  `costo_total` DECIMAL NOT NULL,
    `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Horario_id` INT NOT NULL,
-  `Curso_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `horario` INT NOT NULL,
+  `curso` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_CursoAbierto_Horario1`
-    FOREIGN KEY (`Horario_id`)
+    FOREIGN KEY (`horario`)
     REFERENCES `mydb`.`Horario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_CursoAbierto_Curso1`
-    FOREIGN KEY (`Curso_id`)
+    FOREIGN KEY (`curso`)
     REFERENCES `mydb`.`Curso` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_CursoAbierto_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -188,17 +195,17 @@ CREATE TABLE IF NOT EXISTS `mydb`.`CursoAbierto` (
 
 
 -- Creación de la tabla PlanPago
-CREATE TABLE IF NOT EXISTS `mydb`.`PlanPago` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Plan_pago` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `planPago` VARCHAR(45) NOT NULL,
+  `plan_pago` VARCHAR(45) NOT NULL,
   `detalles` VARCHAR(255) NULL,
   `pago` INT(2) NOT NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_PlanPago_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -213,30 +220,30 @@ CREATE TABLE IF NOT EXISTS `mydb`.`PlanPago` (
 CREATE TABLE IF NOT EXISTS `mydb`.`Inscripcion` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `comentario` TEXT NULL,
-  `usuario_id` INT NOT NULL,
-  `CursoAbierto_id` INT NOT NULL,
-  `PlanPago_id` INT NOT NULL,
+  `usuario` INT NOT NULL,
+  `curso_abierto` INT NOT NULL,
+  `plan_pago` INT NOT NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Inscripcion_usuario1`
-    FOREIGN KEY (`usuario_id`)
+    FOREIGN KEY (`usuario`)
     REFERENCES `mydb`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Inscripcion_CursoAbierto1`
-    FOREIGN KEY (`CursoAbierto_id`)
-    REFERENCES `mydb`.`CursoAbierto` (`id`)
+    FOREIGN KEY (`curso_abierto`)
+    REFERENCES `mydb`.`Curso_abierto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Inscripcion_PlanPago1`
-    FOREIGN KEY (`PlanPago_id`)
-    REFERENCES `mydb`.`PlanPago` (`id`)
+    FOREIGN KEY (`Plan_pago`)
+    REFERENCES `mydb`.`Plan_pago` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Inscripcion_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -250,10 +257,10 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Asignatura` (
   `area` VARCHAR(45) NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Asignatura_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -261,23 +268,23 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Asignatura` (
 
 
 -- Creación de la tabla AsignaturaCurso
-CREATE TABLE IF NOT EXISTS `mydb`.`AsignaturaCurso` (
-  `Asignatura_id` INT NOT NULL,
-  `CursoAbierto_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
-  PRIMARY KEY (`Asignatura_id`, `CursoAbierto_id`),
+CREATE TABLE IF NOT EXISTS `mydb`.`Asignatura_curso` (
+  `asignatura` INT NOT NULL,
+  `curso_abierto` INT NOT NULL,
+  `estado` INT NOT NULL,
+  PRIMARY KEY (`asignatura`, `curso_abierto`),
   CONSTRAINT `fk_AsignaturaCurso_Asignatura1`
-    FOREIGN KEY (`Asignatura_id`)
+    FOREIGN KEY (`asignatura`)
     REFERENCES `mydb`.`Asignatura` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_AsignaturaCurso_CursoAbierto1`
-    FOREIGN KEY (`CursoAbierto_id`)
-    REFERENCES `mydb`.`CursoAbierto` (`id`)
+    FOREIGN KEY (`curso_abierto`)
+    REFERENCES `mydb`.`Curso_abierto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_AsignaturaCurso_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -285,32 +292,32 @@ CREATE TABLE IF NOT EXISTS `mydb`.`AsignaturaCurso` (
 
 
 -- Creación de la tabla AsignaturaDocente
-CREATE TABLE IF NOT EXISTS `mydb`.`AsignaturaDocente` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Asignatura_docente` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `idDocente` INT NOT NULL,
-  `idAsignatura` INT NOT NULL,
-  `CursoAbierto_id` INT NOT NULL,
+  `docente` INT NOT NULL,
+  `asignatura` INT NOT NULL,
+  `curso_abierto` INT NOT NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_AsignaturaDocente_usuario1`
-    FOREIGN KEY (`idDocente`)
+    FOREIGN KEY (`docente`)
     REFERENCES `mydb`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_AsignaturaDocente_Asignatura1`
-    FOREIGN KEY (`idAsignatura`)
+    FOREIGN KEY (`asignatura`)
     REFERENCES `mydb`.`Asignatura` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_AsignaturaDocente_CursoAbierto1`
-    FOREIGN KEY (`CursoAbierto_id`)
-    REFERENCES `mydb`.`CursoAbierto` (`id`)
+    FOREIGN KEY (`curso_abierto`)
+    REFERENCES `mydb`.`Curso_abierto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_AsignaturaDocente_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -322,33 +329,33 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Actividad` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `titulo` VARCHAR(45) NOT NULL,
   `descripcion` TEXT NOT NULL,
-  `fechaInicio` DATETIME NOT NULL,
-  `fechaVencimiento` DATETIME NOT NULL,
+  `fecha_inicio` DATETIME NOT NULL,
+  `fecha_vencimiento` DATETIME NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `CursoAbierto_id` INT NOT NULL,
-  `AsignaturaCurso_Asignatura_id` INT NOT NULL,
-  `AsignaturaCurso_CursoAbierto_id` INT NOT NULL,
-  `AsignaturaDocente_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `curso_abierto` INT NOT NULL,
+  `asignatura` INT NOT NULL,
+  `cursoAbierto` INT NOT NULL,
+  `asignatura_docente` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Actividad_CursoAbierto1`
-    FOREIGN KEY (`CursoAbierto_id`)
-    REFERENCES `mydb`.`CursoAbierto` (`id`)
+    FOREIGN KEY (`curso_abierto`)
+    REFERENCES `mydb`.`Curso_abierto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Actividad_AsignaturaCurso1`
-    FOREIGN KEY (`AsignaturaCurso_Asignatura_id` , `AsignaturaCurso_CursoAbierto_id`)
-    REFERENCES `mydb`.`AsignaturaCurso` (`Asignatura_id` , `CursoAbierto_id`)
+    FOREIGN KEY (`asignatura` , `curso_abierto`)
+    REFERENCES `mydb`.`Asignatura_curso` (`asignatura` , `curso_abierto`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Actividad_AsignaturaDocente1`
-    FOREIGN KEY (`AsignaturaDocente_id`)
-    REFERENCES `mydb`.`AsignaturaDocente` (`id`)
+    FOREIGN KEY (`asignatura_docente`)
+    REFERENCES `mydb`.`Asignatura_docente` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Actividad_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -363,22 +370,22 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Estudiante` (
   `comentario` TEXT NULL,
    `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Inscripcion_id` INT NOT NULL,
-  `Actividad_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `inscripcion` INT NOT NULL,
+  `actividad_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Estudiante_Inscripcion1`
-    FOREIGN KEY (`Inscripcion_id`)
+    FOREIGN KEY (`inscripcion`)
     REFERENCES `mydb`.`Inscripcion` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Estudiante_Actividad1`
-    FOREIGN KEY (`Actividad_id`)
+    FOREIGN KEY (`actividad_id`)
     REFERENCES `mydb`.`Actividad` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Estudiante_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -388,18 +395,18 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Estudiante` (
 -- Creación de la tabla Calificacion
 CREATE TABLE IF NOT EXISTS `mydb`.`Calificacion` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `nombreGrado` VARCHAR(45) NOT NULL,
-  `numeroGrado` DECIMAL(3,2) NOT NULL,
-  `Estudiante_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `nombre_grado` VARCHAR(45) NOT NULL,
+  `numero_grado` DECIMAL(3,2) NOT NULL,
+  `estudiante` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Calificacion_Estudiante1`
-    FOREIGN KEY (`Estudiante_id`)
+    FOREIGN KEY (`estudiante`)
     REFERENCES `mydb`.`Estudiante` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Calificacion_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -411,15 +418,15 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Periodo` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `periodo` VARCHAR(45) NOT NULL,
   `descripcion` VARCHAR(250) NULL,
-  `fechaInicio` DATETIME NOT NULL,
-  `fechaVencimiento` DATETIME NOT NULL,
-  `fechaFinal` DATETIME NOT NULL,
+  `fecha_inicio` DATETIME NOT NULL,
+  `fecha_vencimiento` DATETIME NOT NULL,
+  `fecha_final` DATETIME NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Periodo_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -433,46 +440,46 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Periodo` (
 CREATE TABLE IF NOT EXISTS `mydb`.`Reporte` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `grado` DECIMAL NOT NULL,
-  `gComentario` VARCHAR(45) NULL,
+  `gcomentario` VARCHAR(45) NULL,
   `ausencias` DECIMAL NOT NULL,
-  `aComentario` VARCHAR(45) NULL,
+  `acomentario` VARCHAR(45) NULL,
   `comentario` VARCHAR(250) NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `idDocente` INT NOT NULL,
-  `Inscripcion_id` INT NOT NULL,
-  `CursoAbierto_id` INT NOT NULL,
-  `Asignatura_id` INT NOT NULL,
-  `Periodo_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `docente` INT NOT NULL,
+  `inscripcion` INT NOT NULL,
+  `curso_abierto` INT NOT NULL,
+  `asignatura` INT NOT NULL,
+  `periodo` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Reporte_usuario1`
-    FOREIGN KEY (`idDocente`)
+    FOREIGN KEY (`docente`)
     REFERENCES `mydb`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Reporte_Inscripcion1`
-    FOREIGN KEY (`Inscripcion_id`)
+    FOREIGN KEY (`inscripcion`)
     REFERENCES `mydb`.`Inscripcion` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Reporte_CursoAbierto1`
-    FOREIGN KEY (`CursoAbierto_id`)
-    REFERENCES `mydb`.`CursoAbierto` (`id`)
+    FOREIGN KEY (`curso_abierto`)
+    REFERENCES `mydb`.`Curso_abierto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Reporte_Asignatura1`
-    FOREIGN KEY (`Asignatura_id`)
+    FOREIGN KEY (`asignatura`)
     REFERENCES `mydb`.`Asignatura` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Reporte_Periodo1`
-    FOREIGN KEY (`Periodo_id`)
+    FOREIGN KEY (`periodo`)
     REFERENCES `mydb`.`Periodo` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Reporte_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -486,22 +493,22 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Evento` (
   `descripcion` TEXT NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Periodo_id` INT NOT NULL,
-  `Horario_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `periodo` INT NOT NULL,
+  `horario` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Evento_Periodo1`
-    FOREIGN KEY (`Periodo_id`)
+    FOREIGN KEY (`periodo`)
     REFERENCES `mydb`.`Periodo` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Evento_Horario1`
-    FOREIGN KEY (`Horario_id`)
+    FOREIGN KEY (`horario`)
     REFERENCES `mydb`.`Horario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Evento_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -509,26 +516,26 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Evento` (
 
 
 -- Creación de la tabla EventoCurso
-CREATE TABLE IF NOT EXISTS `mydb`.`EventoCurso` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Evento_curso` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `CursoAbierto_id` INT NOT NULL,
-  `Evento_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `curso_abierto` INT NOT NULL,
+  `evento` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_EventoCurso_CursoAbierto1`
-    FOREIGN KEY (`CursoAbierto_id`)
-    REFERENCES `mydb`.`CursoAbierto` (`id`)
+    FOREIGN KEY (`curso_abierto`)
+    REFERENCES `mydb`.`Curso_abierto` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventoCurso_Evento1`
-    FOREIGN KEY (`Evento_id`)
+    FOREIGN KEY (`evento`)
     REFERENCES `mydb`.`Evento` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventoCurso_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -544,16 +551,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Noticias` (
   `imagen` TEXT NOT NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `usuario_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `usuario` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Noticias_usuario1`
-    FOREIGN KEY (`usuario_id`)
+    FOREIGN KEY (`usuario`)
     REFERENCES `mydb`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Noticias_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -561,16 +568,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Noticias` (
 
 
 -- Creación de la tabla TipoRegistro
-CREATE TABLE IF NOT EXISTS `mydb`.`TipoRegistro` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Tipo_registro` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `tipoRegistro` VARCHAR(45) NOT NULL,
-  `descripcionRegistro` TEXT NOT NULL,
+  `tipo_registro` VARCHAR(45) NOT NULL,
+  `descripcion_registro` TEXT NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_TipoRegistro_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -581,22 +588,22 @@ CREATE TABLE IF NOT EXISTS `mydb`.`TipoRegistro` (
 CREATE TABLE IF NOT EXISTS `mydb`.`Registro` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `detalle` TIMESTAMP NOT NULL,
-  `usuario_id` INT NOT NULL,
-  `TipoRegistro_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `usuario` INT NOT NULL,
+  `tipo_registro` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Registro_usuario1`
-    FOREIGN KEY (`usuario_id`)
+    FOREIGN KEY (`usuario`)
     REFERENCES `mydb`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Registro_TipoRegistro1`
-    FOREIGN KEY (`TipoRegistro_id`)
-    REFERENCES `mydb`.`TipoRegistro` (`id`)
+    FOREIGN KEY (`tipo_registro`)
+    REFERENCES `mydb`.`Tipo_registro` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Registro_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -613,16 +620,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Objetivo` (
   `descripcion` TINYTEXT NOT NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Asignatura_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `asignatura` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Objetivo_Asignatura1`
-    FOREIGN KEY (`Asignatura_id`)
+    FOREIGN KEY (`asignatura`)
     REFERENCES `mydb`.`Asignatura` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Objetivo_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -635,10 +642,10 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Pregunta` (
   `pregunta` VARCHAR(45) NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Pregunta_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -647,21 +654,21 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Pregunta` (
 
 -- Creación de la tabla Cuenta
 CREATE TABLE IF NOT EXISTS `mydb`.`Cuenta` (
-  `usuario_id` INT NOT NULL,
+  `usuario` INT NOT NULL,
   `cuenta` VARCHAR(45) NOT NULL,
   `apodo` VARCHAR(45) NOT NULL,
   `imagen` TEXT NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Pregunta_id` INT NOT NULL,
-  PRIMARY KEY (`usuario_id`),
+  `pregunta` INT NOT NULL,
+  PRIMARY KEY (`usuario`),
   CONSTRAINT `fk_Cuenta_usuario`
-    FOREIGN KEY (`usuario_id`)
-    REFERENCES `mydb`.`usuario` (`id`)
+    FOREIGN KEY (`usuario`)
+    REFERENCES `mydb`.`Usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Cuenta_Pregunta1`
-    FOREIGN KEY (`Pregunta_id`)
+    FOREIGN KEY (`pregunta`)
     REFERENCES `mydb`.`Pregunta` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -671,18 +678,18 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Cuenta` (
 -- Creación de la tabla Responsable
 CREATE TABLE IF NOT EXISTS `mydb`.`Responsable` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `idSupervisor` INT NOT NULL,
+  `supervisor` INT NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Responsable_usuario1`
-    FOREIGN KEY (`idSupervisor`)
+    FOREIGN KEY (`supervisor`)
     REFERENCES `mydb`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Responsable_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -691,16 +698,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Responsable` (
 
 -- Creación de la tabla Contraseña
 CREATE TABLE IF NOT EXISTS `mydb`.`Contraseña` (
-  `idUsuario` INT NOT NULL,
-  `salt` BINARY(90) NOT NULL,
-  `hash` BINARY(90) NOT NULL,
+  `usuario` INT NOT NULL,
+   salt BINARY(90) NOT NULL,
+   hash BINARY(90) NOT NULL,
   `respuesta` BINARY(90) NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idUsuario`),
+  PRIMARY KEY (`usuario`),
   CONSTRAINT `fk_Contraseña_usuario1`
-    FOREIGN KEY (`idUsuario`)
-    REFERENCES `mydb`.`usuario` (`id`)
+    FOREIGN KEY (`usuario`)
+    REFERENCES `mydb`.`Usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
@@ -711,18 +718,18 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Notificacion` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `estado` INT(1) NOT NULL,
   `detalle` TEXT NOT NULL,
-  `idNotificador` INT NOT NULL,
+  `notificador` INT NOT NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Notificacion_usuario1`
-    FOREIGN KEY (`idNotificador`)
-    REFERENCES `mydb`.`usuario` (`id`)
+    FOREIGN KEY (`notificador`)
+    REFERENCES `mydb`.`Usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Notificacion_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado_id`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -731,16 +738,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Notificacion` (
 
 -- Creación de la tabla Correo
 CREATE TABLE IF NOT EXISTS `mydb`.`Correo` (
-  `idUsuario` INT NOT NULL,
-  `Correo` VARCHAR(45) NOT NULL,
+  `usuario` INT NOT NULL,
+  `correo` VARCHAR(45) NOT NULL,
   `alteral` VARCHAR(45) NULL,
-  `cPuntaje` INT(2) NULL,
+  `cpuntaje` INT(2) NULL,
    `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idUsuario`),
+  PRIMARY KEY (`usuario`),
   CONSTRAINT `fk_Correo_usuario1`
-    FOREIGN KEY (`idUsuario`)
-    REFERENCES `mydb`.`usuario` (`id`)
+    FOREIGN KEY (`usuario`)
+    REFERENCES `mydb`.`Usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
@@ -748,17 +755,17 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Correo` (
 
 -- Creación de la tabla Telefono
 CREATE TABLE IF NOT EXISTS `mydb`.`Telefono` (
-  `idUsuario` INT NOT NULL,
+  `usuario` INT NOT NULL,
   `telefono` VARCHAR(45) NOT NULL,
-  `alterar` VARCHAR(45) NULL,
+  `alterno` VARCHAR(45) NULL,
   `whatsApp` INT(1) NOT NULL,
   `telegram` INT(1) NOT NULL,
   `otro` VARCHAR(45) NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `fk_Telefono_usuario1`
-    FOREIGN KEY (`idUsuario`)
-    REFERENCES `mydb`.`usuario` (`id`)
+    FOREIGN KEY (`usuario`)
+    REFERENCES `mydb`.`Usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
@@ -768,15 +775,15 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Telefono` (
 CREATE TABLE IF NOT EXISTS `mydb`.`Descuento` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `descuento` VARCHAR(45) NOT NULL,
-  `tipoDescuento` INT(1) NOT NULL,
+  `tipo_descuento` INT(1) NOT NULL,
   `monto` DECIMAL(9,2) NOT NULL,
   `descripcion` VARCHAR(250) NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Descuento_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -787,27 +794,27 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Descuento` (
 -- Table `mydb`.`DescuentoInscripcion`
 -- -----------------------------------------------------
 -- Creación de la tabla DescuentoInscripcion
-CREATE TABLE IF NOT EXISTS `mydb`.`DescuentoInscripcion` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Descuento_inscripcion` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `detalles` VARCHAR(255) NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Inscripcion_id` INT NOT NULL,
-  `Descuento_id` INT NOT NULL,
-  `Estado_id` INT NOT NULL,
+  `inscripcion` INT NOT NULL,
+  `descuento` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_DescuentoInscripcion_Inscripcion1`
-    FOREIGN KEY (`Inscripcion_id`)
+    FOREIGN KEY (`inscripcion`)
     REFERENCES `mydb`.`Inscripcion` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_DescuentoInscripcion_Descuento1`
-    FOREIGN KEY (`Descuento_id`)
+    FOREIGN KEY (`descuento`)
     REFERENCES `mydb`.`Descuento` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_DescuentoInscripcion_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -815,16 +822,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`DescuentoInscripcion` (
 
 
 -- Creación de la tabla TipoPago
-CREATE TABLE IF NOT EXISTS `mydb`.`TipoPago` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Tipo_pago` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `tipoPago` VARCHAR(45) NOT NULL,
+  `tipo_pago` VARCHAR(45) NOT NULL,
   `descripcion` TEXT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `Estado_id` INT NOT NULL,
+  `estado` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_TipoPago_Estado1`
-    FOREIGN KEY (`Estado_id`)
+    FOREIGN KEY (`estado`)
     REFERENCES `mydb`.`Estado` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -839,16 +846,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Pago` (
   `descripcion` TINYTEXT NULL,
  `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `TipoPago_id` INT NOT NULL,
-  `Inscripcion_id` INT NOT NULL,
+  `tipo_pago` INT NOT NULL,
+  `inscripcion` INT NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_Pago_TipoPago1`
-    FOREIGN KEY (`TipoPago_id`)
-    REFERENCES `mydb`.`TipoPago` (`id`)
+    FOREIGN KEY (`tipo_pago`)
+    REFERENCES `mydb`.`Tipo_pago` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Pago_Inscripcion1`
-    FOREIGN KEY (`Inscripcion_id`)
+    FOREIGN KEY (`inscripcion`)
     REFERENCES `mydb`.`Inscripcion` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -856,14 +863,14 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Pago` (
 
 
 -- Creación de la tabla HistorialEstudiante
-CREATE TABLE IF NOT EXISTS `mydb`.`HistorialEstudiante` (
-  `Inscripcion_id` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `mydb`.`Historial_estudiante` (
+  `inscripcion` INT NOT NULL,
   `registro` TEXT NOT NULL,
   `creado` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `modificado` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Inscripcion_id`),
+  PRIMARY KEY (`inscripcion`),
   CONSTRAINT `fk_HistorialEstudiante_Inscripcion1`
-    FOREIGN KEY (`Inscripcion_id`)
+    FOREIGN KEY (`inscripcion`)
     REFERENCES `mydb`.`Inscripcion` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -890,3 +897,17 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
       -- tu.tipoUsuario
 -- FROM TipoUsuario tu
 -- INNER JOIN Estado e ON tu.Estado_id = e.id; 
+
+
+-- SELECT 
+   -- tu.id,
+ --   tu.tipo_usuario,
+--    tu.creado,
+--    tu.modificado,
+ --   e.estado AS estado_id
+--   FROM 
+  --  tipo_usuario tu
+-- INNER JOIN 
+  --  Estado e ON tu.estado_id = e.id
+ -- WHERE 
+   -- tu.estado_id = 1;
