@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import crud.index.modelos.Estado;
@@ -29,7 +30,7 @@ public class EstadoController {
         return "Conectado";
     }
 
-    @GetMapping("/estado")
+    @GetMapping("/Estados")
     public List<Estado> getEstados() {
         return repo.findAll();
     }
@@ -52,6 +53,7 @@ public class EstadoController {
         if (estado != null) {
             estado.setEstado(estadoDetails.getEstado());
             estado.setTipo(estadoDetails.getTipo());
+            estado.setActivo(estadoDetails.getActivo());
             estado.setDetalles(estadoDetails.getDetalles());
             repo.save(estado);
             return new ResponseEntity<>("Estado actualizado correctamente", HttpStatus.OK);
@@ -89,6 +91,13 @@ public class EstadoController {
         } else {
             return new ResponseEntity<>("No se encontró el Estado con ID: " + id, HttpStatus.NOT_FOUND);
         }
+    }
+
+
+
+     @GetMapping("/Estado/")
+    public List<Estado> buscarPorEstado(@RequestParam String estado) {
+        return repo.findByEstadoContaining(estado);
     }
 }
 

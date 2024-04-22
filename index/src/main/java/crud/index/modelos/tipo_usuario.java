@@ -12,25 +12,35 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
 import lombok.Getter;
 import lombok.Setter;
+
+@Getter
+@Setter
+
 @Entity
-public class TipoDocumento {
+
+public class tipo_usuario {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Integer id;
     
-    @Column (name = "tipoDocumento")
-    @Getter
-    @Setter
-    private String tipoDocumento;
+    @Column(name = "tipousuario")
+    private String tipo_usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "estado_id", referencedColumnName = "id")
+    private Estado estado;
+
     
-       @CreationTimestamp
+   @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
     @Getter
     private Timestamp creado;
+
+
 
     @UpdateTimestamp
     @Column(name =  "modificado" )
@@ -38,12 +48,7 @@ public class TipoDocumento {
     private Timestamp modificado ;
 
 
-    @ManyToOne
-    @JoinColumn(name = "Estado_id", referencedColumnName =  "id")
-    private Estado estado;
-
-
-
+    
 
 
 }

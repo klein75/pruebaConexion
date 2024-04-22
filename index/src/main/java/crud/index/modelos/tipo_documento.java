@@ -1,5 +1,7 @@
 package crud.index.modelos;
 
+
+
 import java.sql.Timestamp;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,35 +18,31 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-public class TipoUsuario {
+@Getter
+@Setter
+public class tipo_documento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "tipo_documento ")
+    private String tipo_documento;
 
-    @Column(name = "tipoUsuario")
-    @Getter
-    @Setter
-    private String tipoUsuario;
 
-     @CreationTimestamp
+    @ManyToOne
+    @JoinColumn(name = "estado", referencedColumnName = "id")
+    private Estado estado;
+
+    
+   @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
-    @Getter
     private Timestamp creado;
+
+
 
     @UpdateTimestamp
     @Column(name =  "modificado" )
-    @Getter
     private Timestamp modificado ;
-
-        @ManyToOne
-    @JoinColumn(name = "Estado_id", referencedColumnName = "id")
-    private Estado estado;
-
-
-
 
 }
